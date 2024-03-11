@@ -253,6 +253,7 @@ class InputFieldsState extends State<InputFields> {
                           ),
                           borderRadius: 20,
                           onPress: signInHandler,
+                          fontSize: 15,
                         ),
                       ),
               ],

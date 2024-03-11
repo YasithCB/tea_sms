@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tea_rubber_sms_app/presentation/screens/daily_collection.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/collection_view_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/daily_collection_screen.dart';
 
 import '../../data/constants.dart';
 import '../widgets/rounded_button.dart';
@@ -126,10 +127,10 @@ class _MainMenuState extends State<MainMenu> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const DailyCollection(),
+                builder: (context) => const DailyCollectionScreen(),
               ),
             );
-          },
+          }, fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -142,7 +143,14 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CollectionViewScreen(),
+              ),
+            );
+          }, fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -155,7 +163,7 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {}, fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -168,7 +176,7 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {}, fontSize: 15,
         ),
         const SizedBox(height: 26),
         // reqs
@@ -182,7 +190,7 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {}, fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -195,7 +203,7 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {}, fontSize: 15,
         ),
         const SizedBox(height: 10),
       ],

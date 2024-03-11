@@ -10,7 +10,9 @@ class RoundedButton extends StatelessWidget {
     required this.bgColor,
     required this.textColor,
     required this.width,
+    this.height,
     required this.onPress,
+    required this.fontSize,
     this.borderWidth,
     this.borderRadius,
     this.icon,
@@ -20,7 +22,9 @@ class RoundedButton extends StatelessWidget {
   final Color bgColor;
   final Color textColor;
   final double width;
+  final double? height;
   final Function() onPress;
+  final double fontSize;
   final double? borderWidth;
   final double? borderRadius;
   final Icon? icon;
@@ -31,7 +35,7 @@ class RoundedButton extends StatelessWidget {
       onTap: onPress,
       child: Container(
         width: width,
-        height: 48,
+        height: height?? 45,
         decoration: ShapeDecoration(
           color: bgColor,
           shape: RoundedRectangleBorder(
@@ -62,7 +66,7 @@ class RoundedButton extends StatelessWidget {
                 style: GoogleFonts.poppins(
                   textStyle: TextStyle(
                     color: textColor,
-                    fontSize: deviceWidth > 370 ? 16 : 13.5,
+                    fontSize: deviceWidth > 370 ? fontSize : fontSize - 3,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

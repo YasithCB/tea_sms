@@ -81,9 +81,12 @@ class MyTextField extends StatelessWidget {
             ),
           ),
           isIconNeed
-              ? IconButton(
-                icon: icon!,
-                onPressed: onPressIcon,
+              ? Padding(
+                padding: const EdgeInsets.only(top: 27),
+                child: IconButton(
+                  icon: icon!,
+                  onPressed: onPressIcon,
+                ),
               )
               : const SizedBox(),
         ],
