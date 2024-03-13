@@ -3,60 +3,32 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:tea_rubber_sms_app/presentation/models/search_user.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/home_screen.dart';
-import 'package:tea_rubber_sms_app/presentation/widgets/checkbox.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/date_picker.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/textfield.dart';
-import 'package:tea_rubber_sms_app/util/common_util.dart';
 
 import '../../data/constants.dart';
 import '../../data/db.dart';
 import '../widgets/rounded_button.dart';
 
-class DailyCollectionScreen extends StatefulWidget {
-  const DailyCollectionScreen({super.key});
+class AdvanceBookingEntryScreen extends StatefulWidget {
+  const AdvanceBookingEntryScreen({super.key});
 
   @override
-  State<DailyCollectionScreen> createState() => _DailyCollectionScreenState();
+  State<AdvanceBookingEntryScreen> createState() =>
+      _AdvanceBookingEntryScreenState();
 }
 
-class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
+class _AdvanceBookingEntryScreenState extends State<AdvanceBookingEntryScreen> {
   TextEditingController regNoController = TextEditingController();
   TextEditingController grossWeightController = TextEditingController();
   TextEditingController deductionController = TextEditingController();
   TextEditingController noOfBagsController = TextEditingController();
   String selectedDeduction = deductionsList[0];
 
-  double netWeight = 0;
-  double waterDeduction = 0;
-  double bagWeightDeduction = 0;
+  double thisMonthLeaf = 0;
+  double prevMonthLeaf = 0;
 
   bool _isLoading = false;
-
-  calcNetWeight() {
-    if (grossWeightController.text == '' || deductionController.text == '') {
-      showSnackBar(context, 'Please fill required fields!');
-      return;
-    }
-    if (netWeight == 0) {
-      netWeight = double.tryParse(grossWeightController.text) ?? 0;
-    }
-    setState(() {
-      initDeduction();
-      netWeight -= double.tryParse(deductionController.text) ?? 0;
-    });
-    deductionController.clear();
-  }
-
-  initDeduction() {
-    switch (selectedDeduction) {
-      case 'Water':
-        waterDeduction += double.tryParse(deductionController.text) ?? 0;
-        break;
-      case 'Bag Weight':
-        bagWeightDeduction += double.tryParse(deductionController.text) ?? 0;
-        break;
-    }
-  }
 
   navigateBack() {
     Navigator.pushReplacement(
@@ -111,7 +83,7 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                         ),
                         const SizedBox(width: 15),
                         Text(
-                          'Daily Collection',
+                          'Advance Booking/Entry',
                           style: GoogleFonts.poppins(
                             textStyle: const TextStyle(
                               color: Color(0xFF212822),
@@ -145,15 +117,46 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // date
-                            const MyDatePicker(title: 'Date'),
+                            // Issue Date
+                            const MyDatePicker(title: 'Issue Date'),
+                            // search user
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: RoundedButton(
+                                    title: 'Search by Issued Date',
+                                    icon: const Icon(Icons.search,
+                                        color: Colors.white),
+                                    bgColor: AppColors.primary,
+                                    textColor: Colors.white,
+                                    width: 100,
+                                    onPress: showSearchUserModel,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Center(
+                              child: Text(
+                                'Or',
+                                style: GoogleFonts.poppins(
+                                  textStyle: const TextStyle(
+                                    color: Color(0xFF212822),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
 
                             // search user
                             Row(
                               children: [
                                 Expanded(
                                   child: RoundedButton(
-                                    title: 'Search User',
+                                    title: 'Search by User',
                                     icon: const Icon(Icons.search,
                                         color: Colors.white),
                                     bgColor: AppColors.primary,
@@ -166,171 +169,137 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                               ],
                             ),
 
-                            // display name
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              child: Text(
-                                'Name   : Yasith Chathuranga Bandara',
-                                style: GoogleFonts.poppins(
-                                  textStyle: const TextStyle(
-                                    color: Color(0xFF212822),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Affected Date
+                            const MyDatePicker(title: 'Affected Date'),
 
-                            // checkbox - leafe type
+                            const SizedBox(height: 25),
+
+                            // display name
                             Text(
-                              'Leaf Type',
+                              'Name   : Yasith Chathuranga Bandara',
                               style: GoogleFonts.poppins(
                                 textStyle: const TextStyle(
                                   color: Color(0xFF212822),
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                            const Row(
-                              children: [
-                                MyCheckBox(label: 'Normal'),
-                                MyCheckBox(label: 'Supper'),
-                              ],
+                            const SizedBox(height: 15),
+                            Text(
+                              'This Month Leaf             : $thisMonthLeaf',
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  color: Color(0xFF212822),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Previous Month Leaf     : $prevMonthLeaf',
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  color: Color(0xFF212822),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 15),
 
-                            // checkbox - sms
-                            const Row(
-                              children: [
-                                MyCheckBox(label: 'Need a SMS Alert'),
-                              ],
-                            ),
-
-                            // no of bags
-                            MyTextField(
-                              label: 'No of Bags',
-                              controller: noOfBagsController,
-                              prompt: '0',
-                              isIconNeed: false,
-                              isLabelNeeded: true,
-                            ),
                             // gross weight kg
                             MyTextField(
-                              label: 'Gross Weight Kg',
+                              label: 'Amount',
                               controller: grossWeightController,
                               prompt: '0',
                               isIconNeed: false,
                               isLabelNeeded: true,
                             ),
-
-                            // dropdown
-                            Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      'Deduction',
-                                      style: GoogleFonts.poppins(
-                                        textStyle: const TextStyle(
-                                          color: Color(0xFF212822),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                    DropdownButton<String>(
-                                      value: selectedDeduction,
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedDeduction = newValue!;
-                                        });
-                                      },
-                                      items: deductionsList.map((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(
-                                            value,
-                                            style: GoogleFonts.poppins(
-                                              textStyle: const TextStyle(
-                                                color: Color(0xFF212822),
-                                                fontSize: 12.5,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 15),
-                                Expanded(
-                                  child: MyTextField(
-                                    label: '',
-                                    controller: deductionController,
-                                    prompt: '0',
-                                    isIconNeed: false,
-                                    isLabelNeeded: false,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                GestureDetector(
-                                  onTap: calcNetWeight,
-                                  child: Icon(
-                                    Icons.add_box_outlined,
-                                    color: AppColors.primary,
-                                    size: 30,
-                                  ),
-                                )
-                              ],
-                            ),
-
-                            // display name
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              child: Text(
-                                'Net Weight Kg   : $netWeight',
-                                style: GoogleFonts.poppins(
-                                  textStyle: const TextStyle(
-                                    color: Color(0xFF212822),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-
                             const SizedBox(height: 15),
 
                             // table
                             Table(
                               border: TableBorder.all(),
                               columnWidths: const {
-                                0: FlexColumnWidth(8),
-                                1: FlexColumnWidth(2),
+                                0: FlexColumnWidth(2),
+                                1: FlexColumnWidth(7),
+                                2: FlexColumnWidth(2),
+                                3: FlexColumnWidth(1),
                               },
                               children: [
-                                const TableRow(children: [
-                                  Text(''),
-                                  Center(child: Text('Kg')),
-                                ]),
-                                TableRow(children: [
-                                  const TableCell(
-                                      child: Center(child: Text('Bags'))),
-                                  Center(child: Text(noOfBagsController.text)),
-                                ]),
-                                TableRow(children: [
-                                  const Center(child: Text('Water')),
-                                  Center(
-                                      child: Text(waterDeduction.toString())),
-                                ]),
-                                TableRow(children: [
-                                  const Center(child: Text('Bag Weight')),
-                                  Center(
-                                      child:
-                                          Text(bagWeightDeduction.toString())),
-                                ]),
-                                
+                                const TableRow(
+                                  children: [
+                                    Center(
+                                        child: Text(
+                                      'No',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )),
+                                    Center(
+                                        child: Text(
+                                      'Name',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )),
+                                    Center(
+                                        child: Text(
+                                      'Amount',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )),
+                                    Center(
+                                      child: Padding(
+                                          padding: EdgeInsets.all(4.0),
+                                          child: SizedBox()),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Center(
+                                        child: Text(
+                                      '1002',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )),
+                                    const Center(
+                                        child: Text(
+                                      'Yasith Chathuranga Bandara',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )),
+                                    const Center(
+                                        child: Text(
+                                      '2800',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )),
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(2.0),
+                                        child: Icon(
+                                          Icons.delete_forever,
+                                          size: 18,
+                                          color: AppColors.warning,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
 
@@ -342,7 +311,8 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                                 Expanded(
                                   child: RoundedButton(
                                     title: 'Delete Today Record',
-                                    icon: const Icon(Icons.delete_outlined, color: Colors.white),
+                                    icon: const Icon(Icons.delete_outlined,
+                                        color: Colors.white),
                                     bgColor: AppColors.warning,
                                     textColor: Colors.white,
                                     width: 100,

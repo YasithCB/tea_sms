@@ -121,7 +121,7 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // date
-                      const MyDatePicker(),
+                      const MyDatePicker(title: 'Date'),
                       // Day View search btns
                       _isLoading
                           ? const Center(child: CircularProgressIndicator())
@@ -206,6 +206,12 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                       ),
                       Table(
                         border: TableBorder.all(),
+                        columnWidths: const {
+                          0: FlexColumnWidth(2),
+                          1: FlexColumnWidth(7),
+                          2: FlexColumnWidth(2),
+                          3: FlexColumnWidth(1),
+                        },
                         children: [
                           const TableRow(children: [
                             Center(
@@ -225,16 +231,18 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                               ),
                             )),
                             Center(
-                                child: Text(
-                              'Net Kg',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                              child: Text(
+                                'Net Kg',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            )),
+                            ),
+                            SizedBox(),
                           ]),
-                          const TableRow(children: [
-                            Center(
+                          TableRow(children: [
+                            const Center(
                                 child: Text(
                               '1002',
                               style: TextStyle(
@@ -242,7 +250,7 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                                 fontWeight: FontWeight.w400,
                               ),
                             )),
-                            Center(
+                            const Center(
                                 child: Text(
                               'Mr.Kumarasiri',
                               style: TextStyle(
@@ -250,17 +258,28 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                                 fontWeight: FontWeight.w400,
                               ),
                             )),
-                            Center(
-                                child: Text(
-                              '48',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
+                            const Center(
+                              child: Text(
+                                '48',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            )),
+                            ),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Icon(
+                                  Icons.delete_forever,
+                                  size: 18,
+                                  color: AppColors.warning,
+                                ),
+                              ),
+                            ),
                           ]),
                           TableRow(children: [
-                            const Center(child: Text('')),
+                            const SizedBox(),
                             const Align(
                               alignment: Alignment.centerRight,
                               child: Padding(
@@ -282,6 +301,7 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                                 fontWeight: FontWeight.w400,
                               ),
                             )),
+                            const SizedBox(),
                           ]),
                         ],
                       ),
@@ -305,6 +325,11 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                       ),
                       Table(
                         border: TableBorder.all(),
+                        columnWidths: const {
+                          0: FlexColumnWidth(7),
+                          1: FlexColumnWidth(4),
+                          2: FlexColumnWidth(1),
+                        },
                         children: [
                           const TableRow(children: [
                             Center(
@@ -317,16 +342,18 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                               ),
                             ),
                             Center(
-                                child: Text(
-                              'Net Kg',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                              child: Text(
+                                'Net Kg',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            )),
+                            ),
+                            SizedBox(),
                           ]),
-                          const TableRow(children: [
-                            Center(
+                          TableRow(children: [
+                            const Center(
                                 child: Text(
                               '10/03/2024',
                               style: TextStyle(
@@ -334,14 +361,25 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                                 fontWeight: FontWeight.w400,
                               ),
                             )),
-                            Center(
-                                child: Text(
-                              '48',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
+                            const Center(
+                              child: Text(
+                                '48',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            )),
+                            ),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: Icon(
+                                  Icons.delete_forever,
+                                  size: 18,
+                                  color: AppColors.warning,
+                                ),
+                              ),
+                            ),
                           ]),
                           TableRow(children: [
                             const Align(
@@ -358,13 +396,15 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                               ),
                             ),
                             Center(
-                                child: Text(
-                              supplierMonthTotalCollection.toString(),
-                              style: const TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w400,
+                              child: Text(
+                                supplierMonthTotalCollection.toString(),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            )),
+                            ),
+                            const SizedBox(),
                           ]),
                         ],
                       ),

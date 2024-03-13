@@ -33,6 +33,7 @@ class _SearchUserModalState extends State<SearchUserModal> {
         return '';
     }
   }
+
   String decidePromptText() {
     switch (searchBy) {
       case 'Name':
@@ -148,7 +149,7 @@ class _SearchUserModalState extends State<SearchUserModal> {
               const SizedBox(width: 10),
               Expanded(
                 child: RoundedButton(
-                  onPress: () {},
+                  onPress: widget.onConfirm,
                   bgColor: const Color(0xFF006E47),
                   textColor: Colors.white,
                   title: 'Search',

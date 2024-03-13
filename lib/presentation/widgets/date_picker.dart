@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../util/date_time_util.dart';
 
 class MyDatePicker extends StatefulWidget {
-  const MyDatePicker({super.key});
+  const MyDatePicker({super.key, required this.title});
+
+  final String title;
 
   @override
   State<MyDatePicker> createState() => _MyDatePickerState();
@@ -36,7 +38,7 @@ class _MyDatePickerState extends State<MyDatePicker> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Date',
+              widget.title,
               style: GoogleFonts.poppins(
                 textStyle: const TextStyle(
                   color: Color(0xFF212822),

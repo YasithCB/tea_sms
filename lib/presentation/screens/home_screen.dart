@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/advance_booking_entry_screen.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/collection_view_screen.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/daily_collection_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/deduction_booking_entry_screen.dart';
 
 import '../../data/constants.dart';
 import '../widgets/rounded_button.dart';
@@ -130,7 +132,8 @@ class _MainMenuState extends State<MainMenu> {
                 builder: (context) => const DailyCollectionScreen(),
               ),
             );
-          }, fontSize: 15,
+          },
+          fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -150,7 +153,8 @@ class _MainMenuState extends State<MainMenu> {
                 builder: (context) => const CollectionViewScreen(),
               ),
             );
-          }, fontSize: 15,
+          },
+          fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -163,7 +167,15 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {}, fontSize: 15,
+          onPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AdvanceBookingEntryScreen(),
+              ),
+            );
+          },
+          fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -176,7 +188,15 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {}, fontSize: 15,
+          onPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DeductionBookingEntryScreen(),
+              ),
+            );
+          },
+          fontSize: 15,
         ),
         const SizedBox(height: 26),
         // reqs
@@ -190,7 +210,8 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {}, fontSize: 15,
+          onPress: () {},
+          fontSize: 15,
         ),
         const SizedBox(height: 10),
         RoundedButton(
@@ -203,7 +224,8 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {}, fontSize: 15,
+          onPress: () {},
+          fontSize: 15,
         ),
         const SizedBox(height: 10),
       ],
