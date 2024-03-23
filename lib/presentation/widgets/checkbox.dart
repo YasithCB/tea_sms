@@ -4,9 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/constants.dart';
 
 class MyCheckBox extends StatefulWidget {
-  const MyCheckBox({super.key, required this.label});
+  const MyCheckBox({super.key, required this.label, required this.onChanged});
 
   final String label;
+  final ValueChanged<bool>? onChanged;
 
   @override
   State<MyCheckBox> createState() => _MyCheckBoxState();
@@ -30,6 +31,9 @@ class _MyCheckBoxState extends State<MyCheckBox> {
               setState(() {
                 isChecked = !isChecked;
               });
+              if (widget.onChanged != null) {
+                widget.onChanged!(isChecked);
+              }
             },
           ),
           Text(

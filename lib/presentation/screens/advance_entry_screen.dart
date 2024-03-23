@@ -10,16 +10,14 @@ import '../../data/constants.dart';
 import '../../data/db.dart';
 import '../widgets/rounded_button.dart';
 
-class DeductionBookingEntryScreen extends StatefulWidget {
-  const DeductionBookingEntryScreen({super.key});
+class AdvanceEntryScreen extends StatefulWidget {
+  const AdvanceEntryScreen({super.key});
 
   @override
-  State<DeductionBookingEntryScreen> createState() =>
-      _DeductionBookingEntryScreenState();
+  State<AdvanceEntryScreen> createState() => _AdvanceEntryScreenState();
 }
 
-class _DeductionBookingEntryScreenState
-    extends State<DeductionBookingEntryScreen> {
+class _AdvanceEntryScreenState extends State<AdvanceEntryScreen> {
   TextEditingController regNoController = TextEditingController();
   TextEditingController grossWeightController = TextEditingController();
   TextEditingController deductionController = TextEditingController();
@@ -29,17 +27,8 @@ class _DeductionBookingEntryScreenState
   double thisMonthLeaf = 0;
   double prevMonthLeaf = 0;
 
-  String selectedDeductionType = 'Fertilizer';
-  List<String> deductionTypeList = [
-    'Fertilizer',
-    'Tea',
-    'Dolomite',
-    'Chemical',
-    'Rice'
-  ];
-
   bool _isLoading = false;
-  bool _isSearchedByUser = false;
+  bool _isSearchedByDate = true;
 
   navigateBack() {
     Navigator.pushReplacement(
@@ -51,21 +40,15 @@ class _DeductionBookingEntryScreenState
   }
 
   showSearchUserModel() {
+    setState(() {
+      _isSearchedByDate = false;
+    });
+
     Alert(
       context: context,
       style: alertStyle,
-      content: Padding(
-          padding: EdgeInsets.zero,
-          child: SearchUserModal(
-            onConfirm: () {
-              setState(() {
-                _isSearchedByUser = true;
-              });
-            },
-            onCancel: () {
-              Navigator.of(context).pop();
-            },
-          )),
+      content:
+          const Padding(padding: EdgeInsets.zero, child: SearchUserModal()),
       buttons: [],
     ).show();
   }
@@ -73,9 +56,11 @@ class _DeductionBookingEntryScreenState
   @override
   Widget build(BuildContext context) {
     Widget searchedByUser = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Affected Date
         const MyDatePicker(title: 'Affected Date'),
+
         const SizedBox(height: 25),
 
         // display name
@@ -113,45 +98,6 @@ class _DeductionBookingEntryScreenState
         ),
         const SizedBox(height: 15),
 
-        // deduction type selection
-        Row(
-          children: [
-            Text(
-              'Deduction Type  :      ',
-              style: GoogleFonts.poppins(
-                textStyle: const TextStyle(
-                  color: Color(0xFF212822),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            DropdownButton<String>(
-              value: selectedDeductionType,
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedDeductionType = newValue!;
-                });
-              },
-              items: deductionTypeList.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                        color: Color(0xFF212822),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-
         // gross weight kg
         MyTextField(
           label: 'Amount',
@@ -160,7 +106,8 @@ class _DeductionBookingEntryScreenState
           isIconNeed: false,
           isLabelNeeded: true,
         ),
-        const SizedBox(height: 15),
+
+        const SizedBox(height: 30),
 
         //  btns
         _isLoading
@@ -301,11 +248,11 @@ class _DeductionBookingEntryScreenState
                         ),
                         const SizedBox(width: 15),
                         Text(
-                          'Deduction Booking/Entry',
+                          'Advance Booking/Entry',
                           style: GoogleFonts.poppins(
                             textStyle: const TextStyle(
                               color: Color(0xFF212822),
-                              fontSize: 20,
+                              fontSize: 23,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -342,7 +289,7 @@ class _DeductionBookingEntryScreenState
                               children: [
                                 Expanded(
                                   child: RoundedButton(
-                                    title: 'Search by Issued Date',
+                                    title: 'Search Advance by Date',
                                     icon: const Icon(Icons.search,
                                         color: Colors.white),
                                     bgColor: AppColors.primary,
@@ -350,7 +297,7 @@ class _DeductionBookingEntryScreenState
                                     width: 100,
                                     onPress: () {
                                       setState(() {
-                                        _isSearchedByUser = false;
+                                        _isSearchedByDate = true;
                                       });
                                     },
                                     fontSize: 15,
@@ -378,8 +325,8 @@ class _DeductionBookingEntryScreenState
                               children: [
                                 Expanded(
                                   child: RoundedButton(
-                                    title: 'Search by User',
-                                    icon: const Icon(Icons.search,
+                                    title: 'Add a Advance',
+                                    icon: const Icon(Icons.monetization_on_outlined,
                                         color: Colors.white),
                                     bgColor: AppColors.primary,
                                     textColor: Colors.white,
@@ -392,7 +339,7 @@ class _DeductionBookingEntryScreenState
                             ),
                             const SizedBox(height: 30),
 
-                            _isSearchedByUser ? searchedByUser : searchedByDate
+                            _isSearchedByDate ? searchedByDate : searchedByUser
                           ],
                         ),
                       ),

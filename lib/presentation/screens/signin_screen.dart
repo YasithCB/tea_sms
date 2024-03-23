@@ -16,8 +16,10 @@ class SigninScreen extends StatefulWidget {
 
 TextEditingController userIdController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
+
 bool _isLoading = false;
 bool _isPasswordVisible = false;
+bool isCreateAccount = false;
 
 class _SigninScreenState extends State<SigninScreen> {
   @override
@@ -64,11 +66,11 @@ class _SigninScreenState extends State<SigninScreen> {
                   ),
                   // logo
                   Positioned(
-                    left: 7,
-                    top: 86,
+                    left: 35,
+                    top: 70,
                     child: Container(
-                      width: 301,
-                      height: 184,
+                      width: 180,
+                      height: 170,
                       decoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/logo.png'),
@@ -133,7 +135,7 @@ class InputFieldsState extends State<InputFields> {
     // });
 
     // bool isAuthenticated =
-    //     await authRepo.sendAuthReq(context, enteredUserId, enteredPassword);
+    //     await authRepo.sendAuthReq(enteredUserId, enteredPassword);
 
     // setState(() {
     //   _isLoading = false;
@@ -151,6 +153,9 @@ class InputFieldsState extends State<InputFields> {
     //       builder: (context) => const HomeScreen(),
     //     ),
     //   );
+    // } else {
+    //   // ignore: use_build_context_synchronously
+    //   showSnackBar(context, 'Invalid Credentials!');
     // }
 
     // dev time only
@@ -182,7 +187,7 @@ class InputFieldsState extends State<InputFields> {
                   borderRadius: BorderRadius.circular(20),
                   borderSide: BorderSide.none,
                 ),
-                hintText: 'User ID',
+                hintText: 'User Name',
                 hintStyle: GoogleFonts.poppins(
                   textStyle: const TextStyle(
                     color: Color(0xFF3B3B3B),
@@ -235,7 +240,39 @@ class InputFieldsState extends State<InputFields> {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 16),
+
+            // re-enter password
+            isCreateAccount
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 15),
+                    child: TextField(
+                      scrollPadding: const EdgeInsets.only(bottom: 170),
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                        hintText: 'Re-Enter Password',
+                        hintStyle: GoogleFonts.poppins(
+                          textStyle: const TextStyle(
+                            color: Color(0xFF3B3B3B),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 50.0,
+                          vertical: 13,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -245,7 +282,7 @@ class InputFieldsState extends State<InputFields> {
                         child: RoundedButton(
                           bgColor: AppColors.primary,
                           textColor: Colors.white,
-                          title: 'Sign In',
+                          title: isCreateAccount ? 'Create Account' : 'Sign In',
                           width: 140.0,
                           icon: const Icon(
                             Icons.arrow_forward_outlined,
@@ -257,6 +294,26 @@ class InputFieldsState extends State<InputFields> {
                         ),
                       ),
               ],
+            ),
+            const SizedBox(height: 15),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isCreateAccount = !isCreateAccount;
+                });
+              },
+              child: Text(
+                isCreateAccount
+                    ? 'Already have an Account? Sign In Now!'
+                    : 'Don\'t have an Account? Create Now!',
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: deviceWidth > 370 ? 12 : 9,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

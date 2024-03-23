@@ -1,9 +1,15 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tea_rubber_sms_app/presentation/screens/advance_booking_entry_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/advance_entry_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/advance_view_screen.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/collection_view_screen.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/daily_collection_screen.dart';
-import 'package:tea_rubber_sms_app/presentation/screens/deduction_booking_entry_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/deduction_entry_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/screens/deduction_view_screen.dart';
+import 'package:tea_rubber_sms_app/presentation/widgets/log_out.dart';
 
 import '../../data/constants.dart';
 import '../widgets/rounded_button.dart';
@@ -16,17 +22,99 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Future<bool?> showExitConfirmationDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Exit App'),
+          content: const Text('Are you sure you want to exit the app?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Close all contexts and exit the app
+                Navigator.of(context).pop(true);
+                SystemNavigator
+                    .pop(); // This line closes all routes and exits the app
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 60),
-        child: Column(
-          children: [
-            WelcomeCard(),
-            SizedBox(height: 70),
-            MainMenu(),
-          ],
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        bool? exit = await showExitConfirmationDialog(context);
+        return exit ?? false;
+      },
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: MediaQuery.of(context).size.height,
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(color: Color(0xFFAFEDB3)),
+          child: Stack(
+            children: [
+              // right circle
+              Positioned(
+                left: 245,
+                top: -120,
+                child: Container(
+                  width: 342,
+                  height: 342,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF9FE3A3),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              // left circle
+              Positioned(
+                left: -273,
+                top: -602,
+                child: Container(
+                  width: 784,
+                  height: 784,
+                  decoration: const BoxDecoration(
+                    color: Color(0xB2F0FFEB),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 60,
+                ),
+                child: const Column(
+                  children: [
+                    WelcomeCard(),
+                    SizedBox(height: 70),
+                    MainMenu(),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: LogOut(),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -171,7 +259,7 @@ class _MainMenuState extends State<MainMenu> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const AdvanceBookingEntryScreen(),
+                builder: (context) => const AdvanceViewScreen(),
               ),
             );
           },
@@ -192,7 +280,7 @@ class _MainMenuState extends State<MainMenu> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const DeductionBookingEntryScreen(),
+                builder: (context) => const DeductionViewScreen(),
               ),
             );
           },
@@ -210,7 +298,14 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AdvanceEntryScreen(),
+              ),
+            );
+          },
           fontSize: 15,
         ),
         const SizedBox(height: 10),
@@ -224,7 +319,14 @@ class _MainMenuState extends State<MainMenu> {
             color: Colors.white,
           ),
           borderRadius: 20,
-          onPress: () {},
+          onPress: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DeductionEntryScreen(),
+              ),
+            );
+          },
           fontSize: 15,
         ),
         const SizedBox(height: 10),

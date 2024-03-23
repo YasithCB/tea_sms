@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:tea_rubber_sms_app/cubit/searchby_regno_cubit.dart';
+import 'package:tea_rubber_sms_app/data/model/collection.dart';
+import 'package:tea_rubber_sms_app/presentation/models/add_new_customer.dart';
 import 'package:tea_rubber_sms_app/presentation/models/search_user.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/home_screen.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/checkbox.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/date_picker.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/textfield.dart';
+import 'package:tea_rubber_sms_app/repo/collection_repo.dart';
 import 'package:tea_rubber_sms_app/util/common_util.dart';
 
 import '../../data/constants.dart';
@@ -26,9 +32,14 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
   TextEditingController noOfBagsController = TextEditingController();
   String selectedDeduction = deductionsList[0];
 
+  final CollectionRepo _collectionRepo = CollectionRepo();
+
+  String selectedLeafType = 'Normal';
   double netWeight = 0;
   double waterDeduction = 0;
   double bagWeightDeduction = 0;
+  bool isSmsNeed = false;
+  List<Deduction> dedeuctionsList = [];
 
   bool _isLoading = false;
 
@@ -48,6 +59,15 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
   }
 
   initDeduction() {
+    // add to list
+    dedeuctionsList.add(
+      Deduction(
+        type: selectedDeduction,
+        deduct: int.parse(deductionController.text),
+      ),
+    );
+
+    // update table
     switch (selectedDeduction) {
       case 'Water':
         waterDeduction += double.tryParse(deductionController.text) ?? 0;
@@ -55,6 +75,40 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
       case 'Bag Weight':
         bagWeightDeduction += double.tryParse(deductionController.text) ?? 0;
         break;
+    }
+  }
+
+  saveCollection() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final collection = Collection(
+      name: selectedCustomer!.name,
+      registerNumber: selectedCustomer!.registerNumber,
+      trDay: DateTime.now().day,
+      trMonth: DateFormat('MMM-yy').format(DateTime.now()),
+      trDate: DateFormat('M/d/yyyy').format(DateTime.now()),
+      route: 'Balangoda',
+      qty: int.parse(netWeight.toString()),
+      vehicle: 'None',
+      trRate: 4,
+      gross: int.parse(grossWeightController.text),
+      ws: 'N/A',
+      incRate: 0,
+      commissionRate: 0,
+      grade: selectedLeafType,
+      sms: isSmsNeed,
+      deductions: dedeuctionsList,
+    );
+
+    final isSaveSuccess = await _collectionRepo.saveCollection(collection);
+    setState(() {
+      _isLoading = false;
+    });
+    if (isSaveSuccess) {
+      // ignore: use_build_context_synchronously
+      showSnackBar(context, 'Collection Entry Successfull!');
     }
   }
 
@@ -71,14 +125,17 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
     Alert(
       context: context,
       style: alertStyle,
-      content: Padding(
-          padding: EdgeInsets.zero,
-          child: SearchUserModal(
-            onConfirm: () {},
-            onCancel: () {
-              Navigator.of(context).pop();
-            },
-          )),
+      content:
+          const Padding(padding: EdgeInsets.zero, child: SearchUserModal()),
+      buttons: [],
+    ).show();
+  }
+
+  showAddNewCustomerModal() {
+    Alert(
+      context: context,
+      style: alertStyle,
+      content: const Padding(padding: EdgeInsets.zero, child: AddNewCustomer()),
       buttons: [],
     ).show();
   }
@@ -160,26 +217,48 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                                     textColor: Colors.white,
                                     width: 100,
                                     onPress: showSearchUserModel,
-                                    fontSize: 15,
+                                    fontSize: 13,
                                   ),
                                 ),
+                                const SizedBox(width: 5),
+                                IconButton(
+                                    onPressed: showAddNewCustomerModal,
+                                    icon: const Icon(Icons.add_box_outlined))
                               ],
                             ),
+                            const SizedBox(height: 15),
 
                             // display name
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                              child: Text(
-                                'Name   : Yasith Chathuranga Bandara',
-                                style: GoogleFonts.poppins(
-                                  textStyle: const TextStyle(
-                                    color: Color(0xFF212822),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
+                            BlocBuilder<SearchUserCubit, SearchUserState>(
+                              builder: (context, state) {
+                                if (state.status == SearchUserStatus.loading) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else if (state.status ==
+                                        SearchUserStatus.loaded &&
+                                    selectedCustomer != null) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15),
+                                    child: Text(
+                                      'Name   : ${selectedCustomer!.name}',
+                                      style: GoogleFonts.poppins(
+                                        textStyle: TextStyle(
+                                          color: AppColors.primary,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox();
+                                }
+                              },
                             ),
+
+                            // selected user today records
 
                             // checkbox - leafe type
                             Text(
@@ -192,17 +271,40 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                                 ),
                               ),
                             ),
-                            const Row(
+                            Row(
                               children: [
-                                MyCheckBox(label: 'Normal'),
-                                MyCheckBox(label: 'Supper'),
+                                Radio(
+                                  value: 'Normal',
+                                  groupValue: selectedLeafType,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedLeafType = value!;
+                                    });
+                                  },
+                                ),
+                                const Text('Normal'),
+                                Radio(
+                                  value: 'Supper',
+                                  groupValue: selectedLeafType,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedLeafType = value!;
+                                    });
+                                  },
+                                ),
+                                const Text('Supper'),
                               ],
                             ),
 
                             // checkbox - sms
-                            const Row(
+                            Row(
                               children: [
-                                MyCheckBox(label: 'Need a SMS Alert'),
+                                MyCheckBox(
+                                  label: 'Need a SMS Alert',
+                                  onChanged: (bool value) {
+                                    isSmsNeed = value;
+                                  },
+                                ),
                               ],
                             ),
 
@@ -330,29 +432,12 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                                       child:
                                           Text(bagWeightDeduction.toString())),
                                 ]),
-                                
                               ],
                             ),
 
                             const SizedBox(height: 30),
 
                             //  btns
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: RoundedButton(
-                                    title: 'Delete Today Record',
-                                    icon: const Icon(Icons.delete_outlined, color: Colors.white),
-                                    bgColor: AppColors.warning,
-                                    textColor: Colors.white,
-                                    width: 100,
-                                    onPress: navigateBack,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
                             _isLoading
                                 ? const Center(
                                     child: CircularProgressIndicator())

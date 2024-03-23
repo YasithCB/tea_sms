@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tea_rubber_sms_app/cubit/searchby_regno_cubit.dart';
+import 'package:tea_rubber_sms_app/data/model/customer.dart';
 
-import '../../data/constants.dart';
 import '../widgets/rounded_button.dart';
 import '../widgets/textfield.dart';
 
 class SearchUserModal extends StatefulWidget {
-  const SearchUserModal(
-      {super.key, required this.onConfirm, required this.onCancel});
-
-  final Function() onConfirm;
-  final Function() onCancel;
+  const SearchUserModal({super.key});
 
   @override
   State<SearchUserModal> createState() => _SearchUserModalState();
 }
 
 class _SearchUserModalState extends State<SearchUserModal> {
-  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController searchTextController = TextEditingController();
   String searchBy = 'Name';
   List<String> searchByList = ['Name', 'Contact', 'Reg No'];
 
@@ -47,6 +45,20 @@ class _SearchUserModalState extends State<SearchUserModal> {
     }
   }
 
+  void searchHandler(BuildContext context) async {
+    switch (searchBy) {
+      case 'Name':
+        break;
+      case 'Contact':
+        break;
+      case 'Reg No':
+        context
+            .read<SearchUserCubit>()
+            .searchByRegNo(searchTextController.text);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -69,7 +81,7 @@ class _SearchUserModalState extends State<SearchUserModal> {
           const SizedBox(height: 20),
           // subtitle
           Text(
-            'Search user by his name or contact number',
+            'Search user by his register number/ name or contact number',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               textStyle: const TextStyle(
@@ -127,10 +139,10 @@ class _SearchUserModalState extends State<SearchUserModal> {
             isIconNeed: false,
             onPressIcon: () {},
             isLabelNeeded: true,
-            controller: userNameController,
+            controller: searchTextController,
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 10),
 
           // btns
           Row(
@@ -138,7 +150,9 @@ class _SearchUserModalState extends State<SearchUserModal> {
             children: [
               Expanded(
                 child: RoundedButton(
-                  onPress: widget.onCancel,
+                  onPress: () {
+                    Navigator.pop(context);
+                  },
                   bgColor: const Color(0xFFE2E2E2),
                   textColor: const Color(0xFF151515),
                   title: 'Cancel',
@@ -149,7 +163,9 @@ class _SearchUserModalState extends State<SearchUserModal> {
               const SizedBox(width: 10),
               Expanded(
                 child: RoundedButton(
-                  onPress: widget.onConfirm,
+                  onPress: () {
+                    searchHandler(context);
+                  },
                   bgColor: const Color(0xFF006E47),
                   textColor: Colors.white,
                   title: 'Search',
@@ -158,8 +174,90 @@ class _SearchUserModalState extends State<SearchUserModal> {
                 ),
               ),
             ],
-          )
+          ),
+          const SizedBox(height: 10),
+
+          // searched user list
+          const FilteredUsersList(),
         ],
+      ),
+    );
+  }
+}
+
+class FilteredUsersList extends StatefulWidget {
+  const FilteredUsersList({super.key});
+
+  @override
+  State<FilteredUsersList> createState() => FilteredUsersListState();
+}
+
+class FilteredUsersListState extends State<FilteredUsersList> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SearchUserCubit, SearchUserState>(
+      builder: (context, state) {
+        if (state.status == SearchUserStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.status == SearchUserStatus.loaded) {
+          return Column(
+            children: state.customers
+                .map((customer) => CustomerTile(customer: customer))
+                .toList(),
+          );
+        } else if (state.status == SearchUserStatus.error) {
+          return Center(
+            child: Text(state.error ??
+                'Error while loading'), // Show error message if available
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+  }
+}
+
+class CustomerTile extends StatelessWidget {
+  const CustomerTile({super.key, required this.customer});
+
+  final Customer customer;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        context.read<SearchUserCubit>().selectCustomer(customer);
+        Navigator.pop(context);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: ListTile(
+          title: Text(
+            customer.name,
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: Color(0xFF212822),
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          subtitle: Text(
+            customer.mobile,
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                color: Color(0xFF212822),
+                fontSize: 11.5,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

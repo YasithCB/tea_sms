@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/home_screen.dart';
-import 'package:tea_rubber_sms_app/presentation/widgets/checkbox.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/date_picker.dart';
 import 'package:tea_rubber_sms_app/presentation/widgets/textfield.dart';
 import 'package:tea_rubber_sms_app/util/common_util.dart';

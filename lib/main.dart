@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tea_rubber_sms_app/cubit/searchby_regno_cubit.dart';
 import 'package:tea_rubber_sms_app/presentation/screens/signin_screen.dart';
 
 import 'data/constants.dart';
 
 void main() {
-  runApp(const App());
+  runApp(BlocProvider(
+    create: (context) => SearchUserCubit(),
+    child: const App(),
+  ));
 }
 
 class App extends StatelessWidget {
