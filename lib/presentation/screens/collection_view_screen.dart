@@ -84,7 +84,7 @@ class _CollectionViewScreenState extends State<CollectionViewScreen> {
                   ),
                   const SizedBox(width: 15),
                   Text(
-                    'Daily Collection',
+                    'Collection View',
                     style: GoogleFonts.poppins(
                       textStyle: const TextStyle(
                         color: Color(0xFF212822),

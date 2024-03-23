@@ -33,6 +33,7 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
   String selectedDeduction = deductionsList[0];
 
   final CollectionRepo _collectionRepo = CollectionRepo();
+  List<Collection> todayCollectionsList = [];
 
   String selectedLeafType = 'Normal';
   double netWeight = 0;
@@ -387,7 +388,7 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                               ],
                             ),
 
-                            // display name
+                            // Net Weight Kg
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 15),
                               child: Text(
@@ -436,6 +437,104 @@ class _DailyCollectionScreenState extends State<DailyCollectionScreen> {
                             ),
 
                             const SizedBox(height: 30),
+
+                            // today collections table
+                            BlocBuilder<SearchUserCubit, SearchUserState>(
+                              builder: (context, state) {
+                                if (state.status == SearchUserStatus.loading) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else if (state.status ==
+                                        SearchUserStatus.loaded &&
+                                    todayCollectionsOfSelectedCustomer
+                                        .isNotEmpty) {
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Today Collections of Customer',
+                                            style: GoogleFonts.poppins(
+                                              textStyle: TextStyle(
+                                                color: AppColors.primary,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Table(
+                                        border: TableBorder.all(),
+                                        columnWidths: const {
+                                          0: FlexColumnWidth(7),
+                                          1: FlexColumnWidth(4),
+                                          2: FlexColumnWidth(1),
+                                        },
+                                        children: [
+                                          const TableRow(children: [
+                                            Center(
+                                              child: Text(
+                                                'Date',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                            Center(
+                                              child: Text(
+                                                'Net Kg',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(),
+                                          ]),
+                                          TableRow(children: [
+                                            const Center(
+                                                child: Text(
+                                              '10/03/2024',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            )),
+                                            const Center(
+                                              child: Text(
+                                                '48',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ),
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(2.0),
+                                                child: Icon(
+                                                  Icons.delete_forever,
+                                                  size: 18,
+                                                  color: AppColors.warning,
+                                                ),
+                                              ),
+                                            ),
+                                          ]),
+                                        ],
+                                      ),
+                                    ],
+                                  );
+                                } else {
+                                  return const SizedBox();
+                                }
+                              },
+                            ),
 
                             //  btns
                             _isLoading

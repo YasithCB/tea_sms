@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tea_rubber_sms_app/data/db.dart';
 import 'package:tea_rubber_sms_app/data/model/customer.dart';
+import 'package:tea_rubber_sms_app/repo/collection_repo.dart';
 import 'package:tea_rubber_sms_app/repo/user_repo.dart';
 
 enum SearchUserStatus { initial, loading, loaded, error }
@@ -31,6 +32,7 @@ class SearchUserState {
 
 class SearchUserCubit extends Cubit<SearchUserState> {
   final UserRepo _userRepo = UserRepo();
+  final CollectionRepo _collectionRepo = CollectionRepo();
 
   SearchUserCubit() : super(SearchUserState(status: SearchUserStatus.initial));
 
@@ -52,6 +54,12 @@ class SearchUserCubit extends Cubit<SearchUserState> {
   Future<void> selectCustomer(Customer customer) async {
     emit(state.copyWith(status: SearchUserStatus.loading));
     selectedCustomer = customer;
+
+    // load today collections list
+    todayCollectionsOfSelectedCustomer =
+        await _collectionRepo.getTodayCollectionsByRegNo(
+      customer.registerNumber.toString(),
+    );
     emit(state.copyWith(
       status: SearchUserStatus.loaded,
     ));
